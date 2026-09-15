@@ -3,7 +3,7 @@
    Mengikuti design tokens dari rancangan Figma:
    - Font Inter (400 body, 500 label, 600-700 heading/tombol)
    - Background #FAFAFA, teks utama #111827, teks sekunder #6B7280
-   - Aksen terracotta #C16C4C, soft-red error, soft-green sukses
+   - Aksen terracotta #1677A8, soft-red error, soft-green sukses
    - Radius 8-12px, shadow halus, garis pemisah 1px abu muda
    ========================================================= */
 
@@ -11,8 +11,8 @@
     --color-bg: #FAFAFA;
     --color-text: #111827;
     --color-text-secondary: #6B7280;
-    --color-accent: #C16C4C;
-    --color-accent-dark: #A8583C;
+    --color-accent: #1677A8;
+    --color-accent-dark: #0B3B60;
     --color-error: #E4685D;
     --color-error-bg: #FDF2F1;
     --color-success: #3FA66E;
@@ -110,7 +110,7 @@ a {
 
 .form-control:focus {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(193, 108, 76, 0.12);
+    box-shadow: 0 0 0 3px rgba(22, 119, 168, 0.12);
 }
 
 .form-control.is-invalid {
@@ -153,7 +153,7 @@ a {
 }
 
 .btn-primary:disabled {
-    background-color: #D8CBC3;
+    background-color: #BFDCE9;
     color: #FFFFFF;
     cursor: not-allowed;
 }
@@ -202,29 +202,21 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--color-header);
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: var(--color-text);
     padding: 14px 22px;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border: 1px solid var(--color-border);
+    border-bottom: none;
 }
 
 .app-header__brand {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 15px;
-}
-
-.app-header__logo {
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    background: var(--color-accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
+    color: var(--color-text);
 }
 
 .app-header__user {
@@ -232,6 +224,7 @@ a {
     align-items: center;
     gap: 10px;
     font-size: 13px;
+    color: var(--color-text);
 }
 
 .app-header__avatar {
@@ -248,12 +241,12 @@ a {
 }
 
 .app-header__logout {
-    color: #C9CDD6;
+    color: var(--color-text-secondary);
     font-size: 13px;
 }
 
 .app-header__logout:hover {
-    color: #FFFFFF;
+    color: var(--color-accent);
 }
 
 .app-body {
@@ -355,8 +348,8 @@ a {
 /* ---------- Ringkasan Gaji Bersih ---------- */
 
 .summary-box {
-    background: var(--color-error-bg);
-    border: 1px solid #F3D9D3;
+    background: #EAF4FB;
+    border: 1px solid #BFE0F0;
     border-radius: var(--radius-md);
     padding: 20px 22px;
     display: flex;
@@ -596,12 +589,12 @@ a {
 
 .app-header__nav-link {
     font-size: 13px;
-    color: #C9CDD6;
+    color: var(--color-text-secondary);
     margin-right: 4px;
 }
 
 .app-header__nav-link:hover {
-    color: #FFFFFF;
+    color: var(--color-accent);
 }
 
 .app-shell--narrow {
@@ -702,6 +695,28 @@ a {
     padding: 32px 16px !important;
 }
 
+/* ---------- Sel Nama + Avatar di tabel ---------- */
+
+.employee-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-avatar {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #DCEEF7;
+    color: var(--color-accent-dark);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ---------- Ikon aksi (Edit / Hapus) di tabel ---------- */
 
 .action-icons {
@@ -717,23 +732,75 @@ a {
     width: 30px;
     height: 30px;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--color-border);
-    background: #FFFFFF;
-    color: var(--color-text-secondary);
-    font-size: 14px;
+    border: none;
+    background: rgba(22, 119, 168, 0.12);
+    color: var(--color-accent-dark);
+    font-size: 13px;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .icon-btn:hover {
-    background: #F3F4F6;
-    color: var(--color-text);
+    background: rgba(22, 119, 168, 0.22);
+}
+
+/* Tombol edit dengan teks "Slip Gaji" (bukan lagi cuma ikon persegi) */
+.icon-btn--edit {
+    width: auto;
+    padding: 0 12px;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.icon-btn--danger {
+    background: rgba(228, 104, 93, 0.12);
+    color: var(--color-error);
 }
 
 .icon-btn--danger:hover {
-    background: var(--color-error-bg);
-    border-color: #F3D9D3;
-    color: var(--color-error);
+    background: rgba(228, 104, 93, 0.22);
+}
+
+/* ---------- Footer tabel: jumlah data & navigasi halaman ---------- */
+
+.table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--color-border);
+    background: #FAFAFA;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.table-footer__pages {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-footer__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: #FFFFFF;
+    color: var(--color-text);
+    font-size: 12px;
+}
+
+.table-footer__nav:hover {
+    background: #F3F4F6;
+}
+
+.table-footer__nav.is-disabled {
+    pointer-events: none;
+    opacity: 0.4;
 }
 
 /* ---------- Modal konfirmasi hapus ---------- */
@@ -797,5 +864,11 @@ a {
     .data-table thead th,
     .data-table tbody td {
         padding: 10px;
+    }
+
+    .table-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 }

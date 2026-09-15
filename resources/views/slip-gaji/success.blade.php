@@ -13,7 +13,6 @@
 
     <header class="app-header">
         <div class="app-header__brand">
-            <span class="app-header__logo">&#9993;</span>
             <span>Slip Gaji Karyawan</span>
         </div>
         <div class="app-header__user">
@@ -65,16 +64,16 @@
             </div>
 
             <div class="success-actions">
-                <a href="{{ route('slip-gaji.pdf', $slipGaji) }}" class="btn btn-outline">&#8681; Unduh PDF</a>
+                <a href="{{ route('slip-gaji.pdf', $slipGaji) }}" class="btn btn-outline">Unduh PDF</a>
 
                 <form method="POST" action="{{ route('slip-gaji.email', $slipGaji) }}">
                     @csrf
-                    <button type="submit" class="btn btn-outline">&#9993; Kirim ke Email</button>
+                    <button type="submit" class="btn btn-outline">Kirim ke Email</button>
                 </form>
 
                 <form method="POST" action="{{ route('slip-gaji.whatsapp', $slipGaji) }}">
                     @csrf
-                    <button type="submit" class="btn btn-outline-success">&#128172; Kirim ke WhatsApp</button>
+                    <button type="submit" class="btn btn-outline-success">Kirim ke WhatsApp</button>
                 </form>
             </div>
 

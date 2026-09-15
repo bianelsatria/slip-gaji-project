@@ -17,6 +17,8 @@ class SlipGaji extends Model
     protected $fillable = [
         'karyawan_id',
         'periode',
+        'periode_awal',
+        'periode_akhir',
         'gaji_pokok',
         'lembur',
         'pinjaman_karyawan',
@@ -29,12 +31,15 @@ class SlipGaji extends Model
 
     /**
      * Aturan konversi tipe data otomatis: semua kolom nominal uang
-     * disimpan/dibaca sebagai angka desimal 2 digit, dan kolom waktu
+     * disimpan/dibaca sebagai angka desimal 2 digit, periode_awal/periode_akhir
+     * otomatis jadi object tanggal Carbon, dan kolom waktu
      * kirim (email/whatsapp) otomatis jadi object tanggal Carbon.
      */
     protected function casts(): array
     {
         return [
+            'periode_awal' => 'date',
+            'periode_akhir' => 'date',
             'gaji_pokok' => 'decimal:2',
             'lembur' => 'decimal:2',
             'pinjaman_karyawan' => 'decimal:2',

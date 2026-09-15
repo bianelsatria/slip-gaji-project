@@ -2,8 +2,10 @@
     |--------------------------------------------------------------------------
     | Tambahkan blok ini ke dalam array config/services.php yang sudah ada
     |--------------------------------------------------------------------------
+    | UPDATE: endpoint API Fonnte sudah ditulis langsung di
+    | app/Services/WhatsAppService.php (fixed, tidak perlu diatur di .env),
+    | jadi di sini cukup TOKEN saja yang diambil dari .env.
     */
     'whatsapp' => [
-        'endpoint' => env('WHATSAPP_API_ENDPOINT'),
         'token' => env('WHATSAPP_API_TOKEN'),
     ],

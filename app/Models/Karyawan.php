@@ -81,4 +81,15 @@ class Karyawan extends Model
 
         return mb_strtoupper($depan . $belakang);
     }
+
+    /**
+     * Format gaji_pokok_default jadi teks rupiah yang rapi untuk ditampilkan
+     * di tabel List Karyawan. Contoh hasil: 5500000 -> "Rp 5.500.000".
+     *
+     * @return string
+     */
+    public function formatGajiPokok(): string
+    {
+        return 'Rp ' . number_format((float) $this->gaji_pokok_default, 0, ',', '.');
+    }
 }

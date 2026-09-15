@@ -8,7 +8,6 @@ use App\Models\Karyawan;
 use App\Models\SlipGaji;
 use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
@@ -79,7 +78,10 @@ class SlipGajiController extends Controller
 
         return view('slip-gaji.index', [
             'karyawan' => $karyawan,
-            'periode' => now()->translatedFormat('F Y'),
+            // Default periode: tanggal 1 sampai tanggal terakhir bulan berjalan.
+            // User tetap bebas mengubah kedua tanggal ini lewat input di form.
+            'periodeAwalDefault' => now()->startOfMonth()->format('Y-m-d'),
+            'periodeAkhirDefault' => now()->endOfMonth()->format('Y-m-d'),
             'captchaA' => $angkaA,
             'captchaB' => $angkaB,
         ]);
@@ -113,9 +115,19 @@ class SlipGajiController extends Controller
         $totalPotongan = $pinjaman;
         $gajiBersih = $totalPenghasilan - $totalPotongan;
 
+        // Ubah 2 tanggal yang dipilih user jadi 1 label teks yang gampang dibaca,
+        // contoh: "01 September 2024 - 30 September 2024". Label ini yang dipakai
+        // di tabel, PDF, dan email (kolom `periode`), sementara tanggal aslinya
+        // tetap disimpan terpisah di periode_awal & periode_akhir.
+        $periodeAwal = \Carbon\Carbon::parse($data['periode_awal']);
+        $periodeAkhir = \Carbon\Carbon::parse($data['periode_akhir']);
+        $labelPeriode = $periodeAwal->translatedFormat('d F Y') . ' - ' . $periodeAkhir->translatedFormat('d F Y');
+
         $slipGaji = SlipGaji::create([
             'karyawan_id' => $karyawan->id,
-            'periode' => now()->translatedFormat('F Y'),
+            'periode' => $labelPeriode,
+            'periode_awal' => $periodeAwal,
+            'periode_akhir' => $periodeAkhir,
             'gaji_pokok' => $gajiPokok,
             'lembur' => $lembur,
             'pinjaman_karyawan' => $pinjaman,
@@ -155,40 +167,61 @@ class SlipGajiController extends Controller
     }
 
     /**
-     * Kirim slip gaji ke email user yang sedang login, dengan PDF sebagai lampiran.
+     * Kirim slip gaji ke ALAMAT EMAIL KARYAWAN (bukan email admin yang login).
+     * Memakai Laravel Mail (bukan simulasi) — email ini benar-benar terkirim
+     * asalkan konfigurasi SMTP di file .env sudah benar.
+     * UPDATE: rincian Penghasilan/Potongan/Gaji Bersih ditampilkan sebagai tabel
+     * langsung di isi email (lihat resources/views/emails/slip-gaji.blade.php),
+     * TIDAK ada lagi lampiran PDF di email ini.
      *
      * @param  SlipGaji  $slipGaji  slip gaji yang mau dikirim
      * @return RedirectResponse
      */
     public function sendEmail(SlipGaji $slipGaji): RedirectResponse
     {
-        Mail::to(Auth::user()->email)->send(new SlipGajiMail($slipGaji));
+        $emailTujuan = $slipGaji->karyawan->email;
+
+        // Kalau karyawan belum punya email terdaftar, jangan kirim (akan error kalau dipaksa).
+        if (empty($emailTujuan)) {
+            return back()->withErrors([
+                'email' => 'Karyawan ini belum memiliki alamat email. Tambahkan email lewat data karyawan terlebih dahulu.',
+            ]);
+        }
+
+        Mail::to($emailTujuan)->send(new SlipGajiMail($slipGaji));
 
         $slipGaji->update(['dikirim_email_at' => now()]);
 
-        return back()->with('status', 'Slip gaji berhasil dikirim ke email Anda.');
+        return back()->with('status', 'Slip gaji berhasil dikirim ke email ' . $emailTujuan . '.');
     }
 
     /**
-     * Kirim ringkasan slip gaji via WhatsApp memakai API pihak ketiga (bisa simulasi/dummy).
+     * Kirim ringkasan slip gaji ke NOMOR WHATSAPP KARYAWAN (diambil dari data
+     * karyawan, bukan input manual) memakai API Fonnte lewat WhatsAppService.
      *
-     * @param  Request  $request  dipakai untuk membaca nomor WhatsApp tujuan (opsional)
      * @param  SlipGaji  $slipGaji  slip gaji yang ringkasannya mau dikirim
-     * @param  WhatsAppService  $whatsAppService  service pembungkus pemanggilan API WhatsApp
+     * @param  WhatsAppService  $whatsAppService  service pembungkus pemanggilan API Fonnte
      * @return RedirectResponse
      */
-    public function sendWhatsapp(Request $request, SlipGaji $slipGaji, WhatsAppService $whatsAppService): RedirectResponse
+    public function sendWhatsapp(SlipGaji $slipGaji, WhatsAppService $whatsAppService): RedirectResponse
     {
-        $nomorTujuan = $request->input('nomor_whatsapp', '628000000000');
+        $nomorTujuan = $slipGaji->karyawan->no_telepon;
+
+        // Kalau karyawan belum punya nomor telepon terdaftar, jangan kirim.
+        if (empty($nomorTujuan)) {
+            return back()->withErrors([
+                'whatsapp' => 'Karyawan ini belum memiliki nomor telepon. Tambahkan nomor lewat data karyawan terlebih dahulu.',
+            ]);
+        }
 
         $berhasil = $whatsAppService->kirimSlipGaji($slipGaji, $nomorTujuan);
 
         if ($berhasil) {
             $slipGaji->update(['dikirim_whatsapp_at' => now()]);
 
-            return back()->with('status', 'Slip gaji berhasil dikirim via WhatsApp.');
+            return back()->with('status', 'Slip gaji berhasil dikirim via WhatsApp ke ' . $nomorTujuan . '.');
         }
 
-        return back()->withErrors(['whatsapp' => 'Gagal mengirim slip gaji via WhatsApp.']);
+        return back()->withErrors(['whatsapp' => 'Gagal mengirim slip gaji via WhatsApp. Cek token Fonnte di .env atau lihat log Laravel.']);
     }
 }

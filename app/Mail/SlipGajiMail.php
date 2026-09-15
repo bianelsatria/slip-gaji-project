@@ -3,14 +3,16 @@
 namespace App\Mail;
 
 use App\Models\SlipGaji;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Mailable untuk mengirim slip gaji ke email karyawan,
- * dengan file PDF slip gaji terlampir sebagai attachment.
+ * Mailable untuk mengirim slip gaji ke email karyawan.
+ * UPDATE: rincian slip gaji (Penghasilan, Potongan, Gaji Bersih) sekarang
+ * ditampilkan langsung sebagai tabel di ISI EMAIL, jadi TIDAK ada lagi
+ * lampiran PDF di email (beda dengan tombol "Unduh PDF" yang masih terpisah
+ * dan tetap tersedia di halaman sukses).
  */
 class SlipGajiMail extends Mailable
 {
@@ -21,21 +23,15 @@ class SlipGajiMail extends Mailable
     }
 
     /**
-     * Susun konten email: subject, view body, dan lampiran PDF.
+     * Susun konten email: subject dan view body (berisi tabel rincian slip gaji).
+     * Tidak ada attachment PDF.
      *
      * @return $this
      */
     public function build()
     {
-        $pdf = Pdf::loadView('slip-gaji.pdf', ['slipGaji' => $this->slipGaji]);
-
         return $this
             ->subject('Slip Gaji Periode ' . $this->slipGaji->periode)
-            ->view('emails.slip-gaji')
-            ->attachData(
-                $pdf->output(),
-                'slip-gaji-' . $this->slipGaji->karyawan->nik . '-' . $this->slipGaji->periode . '.pdf',
-                ['mime' => 'application/pdf']
-            );
+            ->view('emails.slip-gaji');
     }
 }

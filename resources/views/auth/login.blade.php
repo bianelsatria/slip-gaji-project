@@ -3,7 +3,8 @@
     Halaman 1: Login.
     Menampilkan form Email & Kata Sandi. Error validasi (format email salah,
     email/password tidak cocok) ditampilkan lewat @error, dikirim dari
-    AuthenticatedSessionController@store.
+    AuthenticatedSessionController@store. Link "Lupa kata sandi?" menuju
+    fitur reset password dengan kode via email (lihat PasswordResetController).
 --}}
 @extends('layouts.app')
 
@@ -14,6 +15,11 @@
     <div class="login-card">
         <p class="login-card__eyebrow">Sistem Slip Gaji</p>
         <h1 class="login-card__title">Masuk ke Sistem</h1>
+
+        {{-- Muncul setelah reset kata sandi berhasil (dikirim dari PasswordResetController@reset) --}}
+        @if (session('status'))
+            <div class="alert-status">{{ session('status') }}</div>
+        @endif
 
         <form method="POST" action="{{ route('login.store') }}" novalidate>
             @csrf
@@ -26,7 +32,7 @@
                     name="email"
                     value="{{ old('email') }}"
                     class="form-control @error('email') is-invalid @enderror"
-                    placeholder="nama.anda@perusahaan.com"
+                    placeholder="emailkamu@gmail.com"
                     autofocus
                 >
                 @error('email')
@@ -50,7 +56,7 @@
 
             <button type="submit" class="btn btn-primary btn-block">Masuk ke Sistem</button>
 
-            <a href="#" class="login-card__forgot">Lupa kata sandi?</a>
+            <a href="{{ route('password.request') }}" class="login-card__forgot">Lupa kata sandi?</a>
         </form>
     </div>
 </div>

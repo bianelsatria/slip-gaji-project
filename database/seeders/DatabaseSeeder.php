@@ -8,7 +8,7 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Jalankan seeder utama aplikasi.
-     * Memanggil KaryawanSeeder untuk membuat akun contoh (Bianel Satria)
+     * Memanggil KaryawanSeeder untuk membuat akun contoh (Ahmad Fauzi)
      * agar bisa langsung dipakai untuk login & uji coba slip gaji.
      */
     public function run(): void

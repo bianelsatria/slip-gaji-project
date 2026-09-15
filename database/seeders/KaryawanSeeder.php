@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Hash;
 
 /**
  * Seeder untuk membuat 1 akun user + data karyawan contoh,
- * sesuai data pada rancangan tampilan figma (Bianel Satria, CEO).
+ * sesuai data pada rancangan tampilan (Ahmad Fauzi, Staff Keuangan).
  */
 class KaryawanSeeder extends Seeder
 {
     public function run(): void
     {
         $user = User::firstOrCreate(
-            ['email' => 'bian@gmail.com'],
+            ['email' => 'bianelsatria@gmail.com'],
             [
                 'name' => 'Bianel Satria',
                 'password' => Hash::make('bian123'),
@@ -27,11 +27,11 @@ class KaryawanSeeder extends Seeder
             ['user_id' => $user->id],
             [
                 'nama' => 'Bianel Satria',
-                'nik' => '20260303',
+                'nik' => '20090308',
                 'jabatan' => 'CEO',
-                'email' => 'bian@gmail.com',
-                'no_telepon' => '0867676767',
-                'gaji_pokok_default' => 300000000,
+                'email' => 'bianelsatria@gmail.com',
+                'no_telepon' => '0895619816477',
+                'gaji_pokok_default' => 555000000,
             ]
         );
     }

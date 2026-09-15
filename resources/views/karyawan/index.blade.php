@@ -1,7 +1,8 @@
 {{--
     karyawan/index.blade.php
     Halaman utama aplikasi (tampil pertama kali setelah login).
-    Menampilkan semua data karyawan dalam bentuk tabel (Nama, NIK, Jabatan, Aksi).
+    Menampilkan semua data karyawan dalam bentuk tabel
+    (Nama, NIK, Jabatan, No. Telepon, Email, Gaji Pokok, Aksi), dipaginasi 10 baris per halaman.
     - Tombol "Tambah Karyawan" -> ke halaman karyawan.create
     - Ikon Edit di tiap baris   -> ke halaman Slip Gaji milik karyawan itu
     - Ikon Hapus di tiap baris  -> buka modal konfirmasi, lalu submit form DELETE
@@ -15,7 +16,6 @@
 
     <header class="app-header">
         <div class="app-header__brand">
-            <span class="app-header__logo">&#9993;</span>
             <span>Slip Gaji Karyawan</span>
         </div>
         <div class="app-header__user">
@@ -49,15 +49,26 @@
                         <th>Nama</th>
                         <th>NIK</th>
                         <th>Jabatan</th>
+                        <th>No. Telepon</th>
+                        <th>Email</th>
+                        <th>Gaji Pokok</th>
                         <th class="text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($karyawans as $karyawan)
                         <tr>
-                            <td>{{ $karyawan->nama }}</td>
+                            <td>
+                                <div class="employee-cell">
+                                    <span class="table-avatar">{{ $karyawan->inisial() }}</span>
+                                    <span>{{ $karyawan->nama }}</span>
+                                </div>
+                            </td>
                             <td>{{ $karyawan->nik }}</td>
                             <td>{{ $karyawan->jabatan }}</td>
+                            <td>{{ $karyawan->no_telepon ?? '-' }}</td>
+                            <td>{{ $karyawan->email ?? '-' }}</td>
+                            <td>{{ $karyawan->formatGajiPokok() }}</td>
                             <td class="text-right">
                                 <div class="action-icons">
                                     {{-- Klik Edit -> langsung ke halaman Slip Gaji karyawan ini --}}
@@ -81,13 +92,31 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center empty-state">
+                            <td colspan="7" class="text-center empty-state">
                                 Belum ada data karyawan. Klik "Tambah Karyawan" untuk mulai.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Info jumlah data & halaman, mengikuti hasil pagination dari controller --}}
+            <div class="table-footer">
+                <span>Menampilkan {{ $karyawans->count() }} dari {{ $karyawans->total() }} data karyawan</span>
+                <div class="table-footer__pages">
+                    <span>Halaman {{ $karyawans->currentPage() }} dari {{ max($karyawans->lastPage(), 1) }}</span>
+                    @if ($karyawans->hasPages())
+                        <a
+                            href="{{ $karyawans->previousPageUrl() }}"
+                            class="table-footer__nav {{ $karyawans->onFirstPage() ? 'is-disabled' : '' }}"
+                        >&larr;</a>
+                        <a
+                            href="{{ $karyawans->nextPageUrl() }}"
+                            class="table-footer__nav {{ ! $karyawans->hasMorePages() ? 'is-disabled' : '' }}"
+                        >&rarr;</a>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -22,8 +22,11 @@ use Illuminate\View\View;
 class KaryawanController extends Controller
 {
     /**
-     * Tampilkan daftar semua karyawan dalam bentuk tabel (Nama, NIK, Jabatan, Aksi).
+     * Tampilkan daftar semua karyawan dalam bentuk tabel
+     * (Nama, NIK, Jabatan, No. Telepon, Aksi).
      * Ini adalah halaman pertama yang dilihat user setelah berhasil login.
+     * Data dipaginasi 10 baris per halaman supaya tabel tetap rapi walau
+     * data karyawan sudah banyak.
      *
      * @return View
      */
@@ -31,7 +34,7 @@ class KaryawanController extends Controller
     {
         // Data karyawan diurutkan dari yang terbaru dibuat, supaya karyawan baru
         // langsung terlihat di bagian atas tabel.
-        $karyawans = Karyawan::latest()->get();
+        $karyawans = Karyawan::latest()->paginate(10);
 
         return view('karyawan.index', [
             'karyawans' => $karyawans,

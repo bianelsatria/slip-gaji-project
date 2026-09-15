@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\SlipGajiController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,17 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
 
 // Proses logout (hapus session, kembali ke halaman login).
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+// ================= LUPA KATA SANDI (kode verifikasi via email) =================
+// Semua route ini TIDAK perlu login (justru dipakai saat user tidak bisa login).
+
+// Langkah 1: form input email, lalu kirim kode 6 digit ke email itu.
+Route::get('/forgot-password', [PasswordResetController::class, 'create'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'store'])->name('password.email');
+
+// Langkah 2: form input kode + password baru, lalu proses gantinya.
+Route::get('/reset-password', [PasswordResetController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
 // Semua route di bawah ini hanya bisa diakses kalau user SUDAH login
 // (middleware 'auth' akan otomatis redirect ke halaman login kalau belum).

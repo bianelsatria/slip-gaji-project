@@ -5,7 +5,9 @@
     1. route('slip-gaji.create')          -> pakai karyawan milik user login
     2. route('slip-gaji.create-for', $id) -> pakai karyawan yang dipilih dari
        tabel List Karyawan (klik ikon Edit)
-    Variabel $karyawan, $periode, $captchaA, $captchaB dikirim dari controller.
+    Variabel $karyawan, $periodeAwalDefault, $periodeAkhirDefault, $captchaA, $captchaB
+    dikirim dari controller. Periode sekarang dipilih manual oleh user lewat
+    2 input tanggal (Dari Tanggal - Sampai Tanggal), bukan otomatis bulan berjalan.
 --}}
 @extends('layouts.app')
 
@@ -16,7 +18,6 @@
 
     <header class="app-header">
         <div class="app-header__brand">
-            <span class="app-header__logo">&#9993;</span>
             <span>Slip Gaji Karyawan</span>
         </div>
         <div class="app-header__user">
@@ -33,7 +34,7 @@
     <div class="app-body">
 
         {{-- Info karyawan: diambil dari model Karyawan (relasi ke user login), read-only --}}
-        <div class="info-box">
+        <div class="info-box info-box--3col">
             <div class="info-box__item">
                 <span class="label">Nama Karyawan</span>
                 <span class="value">{{ $karyawan->nama }}</span>
@@ -46,10 +47,6 @@
                 <span class="label">Jabatan</span>
                 <span class="value">{{ $karyawan->jabatan }}</span>
             </div>
-            <div class="info-box__item">
-                <span class="label">Periode</span>
-                <span class="value">{{ $periode }}</span>
-            </div>
         </div>
 
         <form method="POST" action="{{ route('slip-gaji.store') }}" novalidate>
@@ -57,6 +54,37 @@
             {{-- Kirim ID karyawan secara diam-diam (hidden) supaya controller tahu
                  slip gaji ini mau disimpan untuk karyawan yang mana. --}}
             <input type="hidden" name="karyawan_id" value="{{ $karyawan->id }}">
+
+            {{-- Periode slip gaji: user pilih sendiri rentang tanggalnya --}}
+            <div class="panel panel--periode">
+                <h2 class="panel__title">Periode Slip Gaji</h2>
+                <div class="period-fields">
+                    <div class="form-group">
+                        <label for="periode_awal" class="form-label">Dari Tanggal</label>
+                        <input
+                            type="date"
+                            id="periode_awal" name="periode_awal"
+                            value="{{ old('periode_awal', $periodeAwalDefault) }}"
+                            class="form-control @error('periode_awal') is-invalid @enderror"
+                        >
+                        @error('periode_awal')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="periode_akhir" class="form-label">Sampai Tanggal</label>
+                        <input
+                            type="date"
+                            id="periode_akhir" name="periode_akhir"
+                            value="{{ old('periode_akhir', $periodeAkhirDefault) }}"
+                            class="form-control @error('periode_akhir') is-invalid @enderror"
+                        >
+                        @error('periode_akhir')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
 
             <div class="columns-2">
                 {{-- Kolom Penghasilan --}}

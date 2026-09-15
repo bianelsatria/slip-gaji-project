@@ -15,7 +15,12 @@ return new class extends Migration
     {
         Schema::create('karyawans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            // UPDATE: user_id dibuat NULLABLE (boleh kosong). Sejak ada halaman
+            // "Tambah Karyawan", karyawan bisa dibuat oleh admin tanpa harus
+            // langsung punya akun login sendiri. nullOnDelete() dipakai (bukan
+            // cascadeOnDelete()) supaya kalau akun user dihapus, data karyawan
+            // TIDAK ikut terhapus — hanya tautan ke akunnya yang dikosongkan.
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('nama');
             $table->string('nik')->unique();
             $table->string('jabatan');
